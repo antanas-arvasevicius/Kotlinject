@@ -29,3 +29,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
         jvmTarget = "1.8"
     }
 }
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+}
