@@ -1,8 +1,7 @@
 package com.electrichead.kotlinject.registration.packagescanning
 
 import com.electrichead.kotlinject.registration.TypeRegistry
-import java.io.File
-import java.util.*
+import io.github.classgraph.ClassGraph
 import kotlin.reflect.KClass
 
 class AutoDiscovery(typeRegistry: TypeRegistry) {
@@ -35,36 +34,9 @@ class AutoDiscovery(typeRegistry: TypeRegistry) {
     }
 
     private fun getClasses(packageName: String): List<KClass<*>> {
-        val classLoader = Thread.currentThread().contextClassLoader!!
-        val path = packageName.replace('.', '/')
-        val resources = classLoader.getResources(path)
-        val dirs = ArrayList<File>()
-        while (resources.hasMoreElements()) {
-            val resource = resources.nextElement()
-            dirs.add(File(resource.file))
+        return ClassGraph().enableClassInfo().whitelistPackages(packageName).scan().use { result ->
+            result.allClasses.loadClasses(true).map { it.kotlin }
         }
-        val classes = mutableListOf<KClass<*>>()
-        for (directory in dirs) {
-            classes.addAll(findClasses(directory, packageName))
-        }
-        return classes.toList()
-    }
-
-    private fun findClasses(directory: File, packageName: String): List<KClass<*>> {
-        val classes = mutableListOf<KClass<*>>()
-        if (!directory.exists()) {
-            return classes
-        }
-        val files = directory.listFiles()
-        for (file in files!!) {
-            if (file.isDirectory) {
-                assert(!file.name.contains("."))
-                classes.addAll(findClasses(file, packageName + "." + file.name))
-            } else if (file.name.endsWith(".class")) {
-                classes.add(Class.forName(packageName + '.'.toString() + file.name.substring(0, file.name.length - 6)).kotlin)
-            }
-        }
-        return classes
     }
 }
 

@@ -12,6 +12,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.31")
+    implementation("io.github.classgraph:classgraph:4.8.28")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.4.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
